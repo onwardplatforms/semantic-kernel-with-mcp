@@ -69,6 +69,21 @@ async def get_documentation(request: DocRequest):
             raise e
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/", response_model=Dict[str, str])
+async def health_check():
+    """Simple health check endpoint"""
+    # Include port info in response
+    port = os.environ.get("API_PORT", "8000")
+    return {
+        "status": "ok", 
+        "message": f"Documentation API is running on port {port}"
+    }
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000) 
+    
+    # Get port from environment variable or use default
+    port = int(os.environ.get("API_PORT", 8000))
+    
+    print(f"Starting API server on port {port}...")
+    uvicorn.run(app, host="0.0.0.0", port=port) 
